@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Products } from './entities/product.entity';
+import { Repository } from 'typeorm';
+import { Categories } from 'src/categories/entities/category.entity';
+import data from '../data.json';
 
 @Injectable()
 export class ProductsService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(
+    @InjectRepository(Products) private productsRepository: Repository<Products>,
+    @InjectRepository(Categories) private categoriesRepository: Repository<Categories>,
+  ) {}
+
+  async getProducts(page: number, limit: number) {
+    return await this.productsRepository.find({
+      relations: { category: true },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
   }
 
-  findAll() {
-    return `This action returns all products`;
+  async seeder() {
+    const categories = await this.categoriesRepository.find();
+
+    for (const item of data as any[]) {
+      const category = categories.find((cat) => cat.name === item.category);
+
+      const newProduct = new Products();
+      newProduct.name = item.name;
+      newProduct.description = item.description;
+      newProduct.price = item.price;
+      newProduct.stock = item.stock;
+      newProduct.imgUrl = item.imgUrl;
+      newProduct.category = category!;
+
+      await this.productsRepository.upsert(newProduct, ['name']);
+    }
+    return 'Products Added';
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async getProductById(id: string) {
+    const product = await this.productsRepository.findOneBy({ id });
+    if (!product) throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+    return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async update(id: string) {
+    return `Producto con id ${id} actualizado (Lógica pendiente)`;
   }
 }

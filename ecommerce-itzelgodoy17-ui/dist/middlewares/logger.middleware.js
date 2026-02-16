@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 let LoggerMiddleware = class LoggerMiddleware {
     use(req, res, next) {
         const date = () => new Date().toLocaleString();
-        console.log('${req.method} ${req.originalUrl} Request date:${date()}');
+        console.log(`${req.method} ${req.originalUrl} Request date: ${date()}`);
         next();
     }
 };

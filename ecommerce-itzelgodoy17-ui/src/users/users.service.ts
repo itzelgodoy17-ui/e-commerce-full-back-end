@@ -1,37 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserRepository } from './users.repository';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Users } from './entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    @InjectRepository(Users) private readonly usersRepository: Repository<Users>
+  ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return this.userRepository.save(createUserDto);
+  findAll() {
+    return "Mensaje protegido. Token funcionando";
   }
 
-  findAll(page: number, limit: number) {
 
-    const users = this.userRepository.findAll();
-
-    const start = (page - 1) * limit;
-
-    const end = start + limit;
-
-    return users.slice(start, end)
-
-  }
-
-  findOne(id: number) {
-    return this.userRepository.findOne(id);
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(id, updateUserDto);
-  }
-
-  remove(id: number) {
-    return this.userRepository.delete(id);
-  }
+   update(id: string, user: any) {
+     return `Usuario ${id} actualizado`;
+   }
+   
+   remove(id: string) {
+     return `Usuario ${id} eliminado`;
+   }
+   
+   async getUserById(id: string) {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) throw new NotFoundException();
+  
+    const { password, isAdmin, ...userNoSensitiveData } = user;
+    return userNoSensitiveData;
+    }   
 }

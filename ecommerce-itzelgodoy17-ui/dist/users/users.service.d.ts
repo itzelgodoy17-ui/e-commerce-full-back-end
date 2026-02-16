@@ -1,19 +1,19 @@
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserRepository } from './users.repository';
+import { Users } from './entities/user.entity';
+import { Repository } from 'typeorm';
 export declare class UsersService {
-    private readonly userRepository;
-    constructor(userRepository: UserRepository);
-    create(createUserDto: CreateUserDto): {
-        id: number;
+    private readonly usersRepository;
+    constructor(usersRepository: Repository<Users>);
+    findAll(): string;
+    update(id: string, user: any): string;
+    remove(id: string): string;
+    getUserById(id: string): Promise<{
+        id: string;
         email: string;
         name: string;
-        password: string;
+        phone: number;
+        country: string;
         address: string;
-        phone: string;
-    };
-    findAll(page: number, limit: number): import("./entities/user.entity").User[];
-    findOne(id: number): void;
-    update(id: number, updateUserDto: UpdateUserDto): import("./entities/user.entity").User | "User not found";
-    remove(id: number): import("./entities/user.entity").User[];
+        city: string;
+        order: import("../orders/entities/order.entity").Orders[];
+    }>;
 }

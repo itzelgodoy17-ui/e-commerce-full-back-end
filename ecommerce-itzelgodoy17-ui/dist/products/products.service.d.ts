@@ -1,9 +1,12 @@
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { Products } from './entities/product.entity';
+import { Repository } from 'typeorm';
+import { Categories } from 'src/categories/entities/category.entity';
 export declare class ProductsService {
-    create(createProductDto: CreateProductDto): string;
-    findAll(): string;
-    findOne(id: number): string;
-    update(id: number, updateProductDto: UpdateProductDto): string;
-    remove(id: number): string;
+    private productsRepository;
+    private categoriesRepository;
+    constructor(productsRepository: Repository<Products>, categoriesRepository: Repository<Categories>);
+    getProducts(page: number, limit: number): Promise<Products[]>;
+    seeder(): Promise<string>;
+    getProductById(id: string): Promise<Products>;
+    update(id: string): Promise<string>;
 }

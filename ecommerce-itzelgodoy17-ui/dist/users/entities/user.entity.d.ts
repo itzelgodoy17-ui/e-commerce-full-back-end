@@ -1,10 +1,13 @@
-export declare class User {
-    id: number;
+import { Orders } from "src/orders/entities/order.entity";
+export declare class Users {
+    id: string;
     email: string;
     name: string;
     password: string;
+    phone: number;
+    country: string;
     address: string;
-    phone: string;
-    country?: string;
-    city?: string;
+    city: string;
+    isAdmin: boolean;
+    order: Orders[];
 }

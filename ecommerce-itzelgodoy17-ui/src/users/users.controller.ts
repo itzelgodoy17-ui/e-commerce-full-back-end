@@ -1,40 +1,38 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, ParseUUIDPipe, UseGuards, Put, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+
 
 @Controller('users')
+@UseGuards(AuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
+  @ApiBearerAuth()
   @Get()
-  @UseGuards(AuthGuard)
-  findAll(@Query("page") page: string, @Query("limit") limit: string) {
-
-    if(page && limit) {
-      return this.usersService.findAll(+page, +limit);
-    }
-    return this.usersService.findAll(1, 3);
+  @Roles('admin')
+  @UseGuards(RolesGuard) 
+  getUsers() {
+    return this.usersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  getUser(@Param('id', ParseUUIDPipe) id: string) {
+    return this.usersService.getUserById(id);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() user: any) {
+    return this.usersService.update(id, user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  deleteUser(@Param('id', ParseUUIDPipe) id: string) {
+    return this.usersService.remove(id);
   }
+
+
 }

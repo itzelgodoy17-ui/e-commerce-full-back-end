@@ -6,7 +6,7 @@ export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const date = () => new Date().toLocaleString();
 
-    console.log('${req.method} ${req.originalUrl} Request date:${date()}');
+    console.log(`${req.method} ${req.originalUrl} Request date: ${date()}`);
     next();
   }
 }
